@@ -1,71 +1,79 @@
-module tx_enaa (
-    input wr, input tx_enb, input clk, input reset, 
+module t (
+    input clk, 
+    input rst, 
+    input enb, 
+    input wr_en,
     input [7:0] data_in, 
-    output  reg busy, output  reg tx 
+    output reg tx, 
+    output busy
 );
-    parameter idle = 0, start = 1, steady = 2, stop = 3;
-    reg [1:0] state, next_state;
-    reg [7:0] data;
-    reg [2:0] index;
-
+    localparam idle_state  = 2'b00;
+    localparam start_state = 2'b01;
+    localparam data_state  = 2'b10;
+    localparam stop_state  = 2'b11;
     
+    reg [1:0] state;
+    reg [7:0] data;       
+    reg [2:0] bit_cnt;    
+
     always @(posedge clk) begin
-        if (reset) begin
-            state <= idle;
-        end else begin
-            state <= next_state;
+        if (rst) begin
+            tx      <= 1'b1;
+            state   <= idle_state;
+            data    <= 8'd0;
+            bit_cnt <= 3'd0;
         end
-    end
-
-    always @(posedge clk) begin
-        if (reset) begin
-            busy  <= 1'b0;
-            tx    <= 1'b1;
-            index <= 3'd0;
-            data  <= 8'd0;
-        end else begin
+        else begin
             case (state)
-                idle: begin
-                    busy <= 1'b0;
-                    tx   <= 1'b1;
-                    if (wr) begin
-                        next_state <= start;
-                        busy       <= 1'b1;
-                        data       <= data_in;
-                    end else begin
-                        next_state <= idle;
+                idle_state: begin
+                    tx <= 1'b1; 
+                    if (wr_en) begin
+                        state   <= start_state;
+                        data    <= data_in;
+                        bit_cnt <= 3'd0;
                     end
-                end
-
-                start: begin
-                    if (tx_enb) begin
-                        next_state <= steady;
-                        tx         <= 1'b0;
-                        index      <= 3'd0;
+                
+            end
+                
+                start_state: begin
+                    if (enb) begin
+                        tx    <= 1'b0;
+                        state <= data_state;
                     end
+                         
                 end
-
-                steady: begin
-                    if (tx_enb) begin
-                        tx <= data[index];
-                        if (index == 3'd7) begin 
-                            next_state <= stop;
-                        end else begin
-                            index <= index + 1'b1;
+                
+                data_state: begin
+                    if (enb) begin
+                        
+                        tx   <= data[0]; 
+                        data <= {1'b0, data[7:1]}; 
+                        
+                        // 4. Check if we've sent all 8 bits
+                        if (bit_cnt == 3'h7) begin
+                            state <= stop_state;
+                        end
+                        else begin
+                            bit_cnt <= bit_cnt + 3'h1; 
                         end
                     end
                 end
-
-                stop: begin
-                    if (tx_enb) begin
-                        next_state <= idle;
-                        tx         <= 1'b1; 
-                        busy       <= 1'b0;
+                
+                stop_state: begin
+                    if (enb) begin
+                        tx    <= 1'b1;
+                        state <= idle_state;
                     end
                 end
                 
-                default: next_state <= idle;
+                default: begin
+                    tx    <= 1'b1;
+                    state <= idle_state;
+                end
             endcase
         end
     end
+
+    assign busy = (state != idle_state);
+
 endmodule
