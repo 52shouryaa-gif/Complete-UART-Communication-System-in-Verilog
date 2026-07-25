@@ -1,46 +1,36 @@
-module topfina (
-    input clk,
-    input reset,
-
-    // RX
-    input rx,
-    output rdy,
-    output [7:0] data_out,
-
-    // TX
-    input wr,
-    input [7:0] data_in,
-    output busy,
-    output tx,
-
-    // baud rate enables
-    output tx_enb,
-    output rx_enb
+module topuart (
+    input clk , rst , wr_en , rdy_clr , input[7:0] data_in,
+    output rdy , busy , output [7:0] data_out
 );
+    wire rx_en_baud;
+    wire tx_en_baud;
+    wire tx_temp;
 
-    baudrate bu (
+    rx r (
         .clk(clk),
-        .tx_enb(tx_enb),
-        .rx_enb(rx_enb)
-    );
-
-    rx_enaa rxi (
-        .clk(clk),
-        .reset(reset),
-        .rx_enb(rx_enb),
-        .rx(rx),
+        .rst(rst) ,
+        .rx(tx_temp) , 
+        .data_out(data_out),
         .rdy(rdy),
-        .data_out(data_out)
+        .clk_en(rx_en_baud) ,
+        .rdy_clr(rdy_clr)
     );
 
-    tx_enaa txi (
+    t transmitter(
         .clk(clk),
-        .reset(reset),
-        .tx_enb(tx_enb),
-        .wr(wr),
+        .rst(rst),
+        .enb(tx_en_baud),
         .data_in(data_in),
         .busy(busy),
-        .tx(tx)
+        .tx(tx_temp),
+        .wr_en(wr_en)
+    );
+
+    baud_rate b(
+        .clk(clk),
+        .tx_enb(tx_en_baud),
+        .rx_enb(rx_en_baud),
+        .rst(rst)
     );
 
 endmodule
