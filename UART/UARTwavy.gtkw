@@ -1,0 +1,69 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Sat Jul 25 03:17:56 2026
+[*]
+[dumpfile] "C:\Users\DELL\OneDrive\Pictures\Screenshots\Desktop\UARTN\uart.vcd"
+[dumpfile_mtime] "Sat Jul 25 02:36:55 2026"
+[dumpfile_size] 37675
+[savefile] "C:\Users\DELL\OneDrive\Pictures\Screenshots\Desktop\UARTN\UARTwavy.gtkw"
+[timestart] 0
+[size] 1920 1009
+[pos] -139 -139
+*-19.699572 2670000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] testuart.
+[treeopen] testuart.uut.
+[sst_width] 43
+[signals_width] 142
+[sst_expanded] 0
+[sst_vpaned_height] 298
+@28
+testuart.uut.b.clk
+testuart.uut.b.rst
+@800200
+-baud
+@22
+testuart.uut.b.rx_count[9:0]
+@28
+testuart.uut.b.rx_enb
+@22
+testuart.uut.b.tx_count[12:0]
+@28
+testuart.uut.b.tx_enb
+@1000200
+-baud
+@800200
+-receiver
+@28
+testuart.uut.r.clk_en
+@22
+testuart.uut.r.sample[3:0]
+@28
+testuart.uut.r.rx
+testuart.uut.r.index[2:0]
+@22
+testuart.uut.r.sample[3:0]
+testuart.uut.r.data_out[7:0]
+@28
+testuart.uut.r.rdy
+@1000200
+-receiver
+@28
+testuart.uut.transmitter.clk
+testuart.uut.transmitter.rst
+@800200
+-transmitter
+@28
+testuart.uut.transmitter.enb
+testuart.uut.transmitter.wr_en
+testuart.uut.transmitter.bit_cnt[2:0]
+@22
+testuart.uut.transmitter.data_in[7:0]
+testuart.uut.transmitter.data[7:0]
+@28
+testuart.uut.transmitter.state[1:0]
+@29
+testuart.uut.transmitter.tx
+@1000200
+-transmitter
+[pattern_trace] 1
+[pattern_trace] 0
