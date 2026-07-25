@@ -1,23 +1,38 @@
-module baudrate (
-    input clk , output tx_enb , output rx_enb
+module baud_rate(
+    input clk,
+    input rst, 
+    output tx_enb,
+    output rx_enb
 );
-reg [15:0] counter;
-parameter freq = 5000000 ;
-parameter baudy = 9600;
-parameter txdiv = freq/(baudy);
-parameter rxdiv = freq/(baudy*16);
+    reg [12:0] tx_count;
+    reg [9:0] rx_count;
 
-reg [$clog2 (txdiv)-1 : 0 ] tx_en;
-reg [$clog2 (rxdiv)-1 : 0 ] rx_en;
-always @(posedge clk) begin
-    if(tx_en == txdiv - 1) tx_en <=0;
-    else tx_en <= tx_en + 1;
-end
-always @(posedge clk) begin
-    if(rx_en == rxdiv - 1) rx_en <=0;
-    else rx_en <= rx_en + 1;
-end
-assign tx_enb = (tx_en == 0);
-assign rx_enb = (rx_en == 0);
+    always @(posedge clk) begin
+        if (rst) begin
+            tx_count <= 13'd0;
+        end 
+        else if (tx_count == 13'd63) begin // 64 cycles (0 to 63)
+            tx_count <= 13'd0;
+        end 
+        else begin
+            tx_count <= tx_count + 1'b1; 
+        end
+    end
 
+    always @(posedge clk) begin
+        if (rst) begin
+            rx_count <= 10'd0;
+        end 
+        else if (rx_count == 10'd3) begin // 4 cycles (0 to 3)
+            rx_count <= 10'd0;
+        end 
+        else begin
+            rx_count <= rx_count + 1'b1; 
+        end
+    end
+
+    assign rx_enb = (rx_count == 0);
+    assign tx_enb = (tx_count == 0);
 endmodule
+// we take 64 and 4 cycles for easily verify it in waveform 
+// we can replace 64 by 5208 and 325 in place of 4
